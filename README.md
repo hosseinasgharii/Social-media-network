@@ -18,12 +18,15 @@ Git clone https://github.com/your-username/your-repository.git
 ##Usage
 
 This section should provide information on how to use the project, including examples of how to use any command-line tools or web interfaces.
-Contributing
+
+##Contributing
 
 Provide information on how to contribute to the project, including guidelines for submitting pull requests and reporting bugs.
-License
+
+##License
 
 This project is licensed under the [LICENSE NAME HERE] license - see the LICENSE.md file for details.
-Acknowledgements
+
+##Acknowledgements
 
 This section should acknowledge any individuals or organizations that contributed to the project, including any libraries or frameworks used.
