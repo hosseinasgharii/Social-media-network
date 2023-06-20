@@ -45,8 +45,10 @@ class Comment(models.Model):
     comment_text = models.CharField(max_length=128)
     user = models.ForeignKey(MyUser,on_delete=models.CASCADE)
     post = models.ForeignKey(PostModel,on_delete=models.CASCADE)
-    reply_to = models.ForeignKey("self", blank=True, null=True,on_delete=models.CASCADE) 
+    reply_to = models.ForeignKey("self", blank=True, null=True,on_delete=models.CASCADE,related_name="reply") 
     create_time = models.DateTimeField(auto_now_add=True)
+    parent = models.ForeignKey("self",verbose_name=_("Parent Comment"),on_delete=models.SET_NULL,null=True,blank=True,
+                               related_name="child")
 
     class Meta:
         verbose_name = _("Comment")

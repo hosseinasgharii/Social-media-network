@@ -1,6 +1,5 @@
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
-from posts.models import Report
 # Create your models here.
 
 class MyUserManager(BaseUserManager):
@@ -84,8 +83,12 @@ class MyUser(AbstractBaseUser):
     
     
 class Relationship(models.Model):
-    follower = models.ForeignKey(MyUser, related_name='following', on_delete=models.CASCADE)
-    following = models.ForeignKey(MyUser, related_name='followers', on_delete=models.CASCADE)
+    follower = models.ForeignKey(MyUser,related_name='following_relations',related_query_name='following_relation',
+        on_delete=models.CASCADE
+    )
+    following = models.ForeignKey(MyUser,related_name='follower_relations',related_query_name='follower_relation',
+        on_delete=models.CASCADE
+    )
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
