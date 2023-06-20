@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
+from posts.models import Report
 # Create your models here.
 
 class MyUserManager(BaseUserManager):
@@ -71,9 +72,21 @@ class MyUser(AbstractBaseUser):
         "Does the user have permissions to view the app `app_label`?"
         # Simplest possible answer: Yes, always
         return True
+    
+    def report_account(self, user, reason):
+        Report.objects.create(user=user, account=self, reason=reason)
 
     @property
     def is_staff(self):
         "Is the user a member of staff?"
         # Simplest possible answer: All admins are staff
         return self.is_admin
+    
+    
+class Relationship(models.Model):
+    follower = models.ForeignKey(MyUser, related_name='following', on_delete=models.CASCADE)
+    following = models.ForeignKey(MyUser, related_name='followers', on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f'{self.follower.username} -> {self.following.username}'
