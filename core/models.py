@@ -11,4 +11,4 @@ def report_post(user_id, post_id, reason):
 def report_account(user_id, account_id, reason):
     user = get_object_or_404(MyUser, id=user_id)
     account = get_object_or_404(MyUser, id=account_id)
-    account.report_account(user, reason)
+    account.report_account(user, reason)   

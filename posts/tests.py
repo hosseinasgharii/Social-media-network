@@ -1,5 +1,5 @@
 from django.test import TestCase
-from posts.models import PostModel, Report
+from posts.models import PostModel, Report, Comment
 from accounts.models import MyUser
 
 class PostModelTestCase(TestCase):

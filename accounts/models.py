@@ -36,23 +36,24 @@ class MyUserManager(BaseUserManager):
     
 
 class MyUser(AbstractBaseUser):
-    username = models.CharField(max_length=50, unique=True)
-    firstname = models.CharField(max_length=50, blank=True, null=True)
-    lastname = models.CharField(max_length=50, blank=True, null=True)
-    bio = models.TextField(max_length=500, blank=True, null=True)
+    username = models.CharField(max_length=50, unique=True , verbose_name="Username")
+    firstname = models.CharField(max_length=50, blank=True, null=True, verbose_name= "First Name")
+    lastname = models.CharField(max_length=50, blank=True, null=True, verbose_name="Last Name")
+    bio = models.TextField(max_length=500, blank=True, null=True, verbose_name="Bio")
     male = 1
     female = 2
     choice_gender = ((male, "male"), (female,"female"))
-    gender = models.IntegerField(choices=choice_gender, blank=True, null=True)
-    phonenumber = models.CharField(max_length=11, blank=True, null=True)
+    gender = models.IntegerField(choices=choice_gender, blank=True, null=True, verbose_name="Gender")
+    phonenumber = models.CharField(max_length=11, blank=True, null=True, verbose_name="Phone Number")
     email = models.EmailField(
         verbose_name="email address",
         max_length=255,
         unique=True,
+        help_text="Provide a valid email address"
     )
-    date_of_birth = models.DateField(blank=True, null=True)
-    is_active = models.BooleanField(default=True)
-    is_admin = models.BooleanField(default=False)
+    date_of_birth = models.DateField(blank=True, null=True, verbose_name="Birthday")
+    is_active = models.BooleanField(default=True, verbose_name="Active")
+    is_admin = models.BooleanField(default=False, verbose_name="Admin")
 
     objects = MyUserManager()
 
@@ -84,12 +85,12 @@ class MyUser(AbstractBaseUser):
     
 class Relationship(models.Model):
     follower = models.ForeignKey(MyUser,related_name='following_relations',related_query_name='following_relation',
-        on_delete=models.CASCADE
+        on_delete=models.CASCADE, verbose_name="Follower"
     )
     following = models.ForeignKey(MyUser,related_name='follower_relations',related_query_name='follower_relation',
-        on_delete=models.CASCADE
+        on_delete=models.CASCADE, verbose_name="Following"
     )
-    created_at = models.DateTimeField(auto_now_add=True)
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name="Created at")
 
     def __str__(self):
-        return f'{self.follower.username} -> {self.following.username}'
+        return f'{self.follower.username} -> {self.following.username}' 

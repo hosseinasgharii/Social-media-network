@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import PostModel , Comment,Image
+from .models import PostModel , Comment,Image ,Like, SendPost
 # Register your models here.
 
 class ImageInline(admin.TabularInline):
@@ -16,6 +16,11 @@ class PostModelAdmin(admin.ModelAdmin):
     readonly_fields = ('create_time', 'update_time')
     prepopulated_fields = {'slug': ('caption',)}
 
+class LikeInline(admin.TabularInline):
+    model = Like
+    
+admin.site.register(SendPost)   
+admin.site.register(Like)
 admin.site.register(PostModel, PostModelAdmin)
 admin.site.register(Comment)
 admin.site.register(Image)    
