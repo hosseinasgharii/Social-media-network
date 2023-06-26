@@ -4,6 +4,7 @@ from accounts.models import MyUser, Relationship
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from posts.models import PostModel
+from django.http import HttpResponse
 
 
 def signup(request):
@@ -135,15 +136,15 @@ def posts(request):
 
 
 @login_required
-def block_member(request, username):
-    user_to_block = get_object_or_404(MyUser, username=username)
+def block_user(request, user_id):
+    user = request.user
+    blocked_user = get_object_or_404(MyUser, id=user_id)
 
-    Relationship.objects.filter(
-        follower=request.user,
-        following=user_to_block).delete()
+    if user.is_authenticated and user != blocked_user:
+        if not user.is_blocked(blocked_user):
+            user.block_user(blocked_user)
+            return HttpResponse("User blocked successfully.")
+        else:
+            return HttpResponse("User is already blocked.")
 
-    messages.success(
-        request,
-        f"You have blocked {user_to_block.username}."
-        )
-    return redirect('profile')
+    return HttpResponse("Invalid request.")

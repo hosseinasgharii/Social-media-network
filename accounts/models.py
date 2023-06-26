@@ -94,6 +94,13 @@ class MyUser(AbstractBaseUser):
         default=False,
         verbose_name="Admin"
         )
+    blocked_users = models.ManyToManyField(
+        'self',
+        symmetrical=False,
+        blank=True,
+        related_name='blocked_by',
+        verbose_name="Blocked Users"
+    )
 
     objects = MyUserManager()
 
@@ -121,6 +128,24 @@ class MyUser(AbstractBaseUser):
         "Is the user a member of staff?"
         # Simplest possible answer: All admins are staff
         return self.is_admin
+
+    def block_user(self, user):
+        """
+        Blocks another user.
+        """
+        self.blocked_users.add(user)
+
+    def unblock_user(self, user):
+        """
+        Unblocks a blocked user.
+        """
+        self.blocked_users.remove(user)
+
+    def is_blocked(self, user):
+        """
+        Checks if the user is blocked.
+        """
+        return self.blocked_users.filter(id=user.id).exists()
 
 
 class Relationship(models.Model):
