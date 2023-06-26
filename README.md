@@ -7,7 +7,7 @@ This project is a simple Django-based social network that allows you to create p
 - [Description](#description)
 - [Attributes](#attributes)
 - [Installation](#installation)
-- [Contact](#Contact Information)
+- [Contact](#contact)
 
 ## Description
 
@@ -23,7 +23,7 @@ This project is a social media platform that allows users to create accounts, sh
 ## Installation
 
 1. Cloning the repository:
-Git clone <https://github.com/hosseinasgharii/Social-media-network/tree/dev_third>
+Git clone <https://github.com/hosseinasgharii/Social-media-network>
 
 ## Contact
 
@@ -31,4 +31,4 @@ For any inquiries or feedback, please contact(<ho3ein.m1991@gmail.com>)
 
 ### ERD
 
-  ![Entity Relationship Diagram](path/to/Diagram.jpg)
+  ![Entity Relationship Diagram](Diagram.jpg)
