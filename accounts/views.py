@@ -44,6 +44,10 @@ def user_login(request):
 
 @login_required
 def user_logout(request):
+    if not request.user.is_authenticated:
+        messages.info(request, "Please log in first.")
+        return redirect('accounts:login')
+
     logout(request)
     messages.success(request, "Logged out successfully.")
     return redirect('accounts:login')
