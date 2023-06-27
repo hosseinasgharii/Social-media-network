@@ -4,8 +4,9 @@ from django.contrib.auth.models import Group
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.contrib.auth.forms import ReadOnlyPasswordHashField
 from django.core.exceptions import ValidationError
-from .models import MyUser , Relationship
-# Register your models here.
+from .models import MyUser, Relationship, Report
+
+
 class UserCreationForm(forms.ModelForm):
     """A form for creating new users. Includes all the required
     fields, plus a repeated password."""
@@ -58,11 +59,29 @@ class UserAdmin(BaseUserAdmin):
     # These override the definitions on the base UserAdmin
     # that reference specific fields on auth.User.
     list_display = ('email', 'username', 'is_active', 'is_admin')
-    list_filter = ["is_active","is_admin"]
+    list_filter = [
+        "is_active",
+        "is_admin"
+        ]
     fieldsets = [
-        (None, {"fields": ["username","email", "password"]}),
-        ("Personal info", {"fields": ["firstname","lastname","date_of_birth","phonenumber","bio","gender"]}),
-        ("Permissions", {"fields": ["is_admin","is_active"]}),
+        (None, {"fields": [
+            "username",
+            "email",
+            "password"
+            ]}),
+        ("Personal info",
+            {"fields": [
+                "firstname",
+                "lastname",
+                "date_of_birth",
+                "phonenumber",
+                "bio",
+                "gender"
+                ]}),
+        ("Permissions", {"fields": [
+            "is_admin",
+            "is_active"
+            ]}),
     ]
     # add_fieldsets is not a standard ModelAdmin attribute. UserAdmin
     # overrides get_fieldsets to use this attribute when creating a user.
@@ -83,3 +102,4 @@ class UserAdmin(BaseUserAdmin):
 admin.site.register(MyUser, UserAdmin)
 admin.site.unregister(Group)
 admin.site.register(Relationship)
+admin.site.register(Report)

@@ -1,133 +1,147 @@
 from django.test import TestCase
-from posts.models import PostModel, Report
+from posts.models import PostModel, Report, Comment, Image, SendPost, Like
 from accounts.models import MyUser
+from django.utils import timezone
+
 
 class PostModelTestCase(TestCase):
     def setUp(self):
         self.user = MyUser.objects.create_user(
-            email="test@example.com",
-            username="testuser",
-            password="testpassword"
+            email='test@example.com',
+            username='testuser',
+            password='testpassword'
         )
         self.post = PostModel.objects.create(
             user=self.user,
-            caption="Test post",
-            slug="test-post"
+            caption='Test caption',
+            slug='test-post',
+            is_active=True
         )
-    
-    def test_like_post(self):
-        user2 = MyUser.objects.create_user(
-            email="test2@example.com",
-            username="testuser2",
-            password="testpassword"
-        )
-        
-        self.post.like_post(user2)
-        self.assertTrue(self.post.likes.filter(id=user2.id).exists())
-
-    def test_unlike_post(self):
-        user2 = MyUser.objects.create_user(
-            email="test2@example.com",
-            username="testuser2",
-            password="testpassword"
-        )
-        self.post.likes.add(user2)
-        
-        self.post.unlike_post(user2)
-        self.assertFalse(self.post.likes.filter(id=user2.id).exists())
-
-    def test_has_liked_post(self):
-        user2 = MyUser.objects.create_user(
-            email="test2@example.com",
-            username="testuser2",
-            password="testpassword"
-        )
-        self.post.likes.add(user2)
-        
-        self.assertTrue(self.post.has_liked_post(user2))
-        self.assertFalse(self.post.has_liked_post(self.user))
 
     def test_report_post(self):
-        user2 = MyUser.objects.create_user(
-            email="test2@example.com",
-            username="testuser2",
-            password="testpassword"
+        reporter = MyUser.objects.create_user(
+            email='reporter@example.com',
+            username='reporter',
+            password='reporterpassword'
         )
-        reason = "Inappropriate content"
-        
-        self.post.report_post(user2, reason)
-        
-        report = Report.objects.get(user=user2, post=self.post)
+        reason = 'This post violates the community guidelines.'
+        self.post.report_post(reporter, reason)
+        self.assertEqual(Report.objects.count(), 1)
+        report = Report.objects.first()
+        self.assertEqual(report.user, reporter)
+        self.assertEqual(report.post, self.post)
         self.assertEqual(report.reason, reason)
 
-class ImageTestCase(TestCase):
+
+class ImageModelTestCase(TestCase):
     def setUp(self):
         self.user = MyUser.objects.create_user(
-            email="test@example.com",
-            username="testuser",
-            password="testpassword"
+            email='test@example.com',
+            username='testuser',
+            password='testpassword'
         )
         self.post = PostModel.objects.create(
             user=self.user,
-            caption="Test post",
-            slug="test-post"
+            caption='Test caption',
+            slug='test-post',
+            is_active=True
         )
         self.image = Image.objects.create(
-            name="Test Image",
-            alt="Test Image",
-            image="test_image.jpg",
+            name='Test image',
+            alt='Test image',
+            image='test-image.jpg',
             post=self.post
         )
-    
-    def test_str_representation(self):
-        self.assertEqual(str(self.image), "Test Image")
 
-class CommentTestCase(TestCase):
+    def test_image_creation(self):
+        self.assertEqual(Image.objects.count(), 1)
+        image = Image.objects.first()
+        self.assertEqual(image.name, 'Test image')
+        self.assertEqual(image.alt, 'Test image')
+        self.assertEqual(image.image, 'test-image.jpg')
+        self.assertEqual(image.post, self.post)
+
+
+class LikeModelTestCase(TestCase):
     def setUp(self):
         self.user = MyUser.objects.create_user(
-            email="test@example.com",
-            username="testuser",
-            password="testpassword"
+            email='test@example.com',
+            username='testuser',
+            password='testpassword'
         )
         self.post = PostModel.objects.create(
             user=self.user,
-            caption="Test post",
-            slug="test-post"
+            caption='Test caption',
+            slug='test-post',
+            is_active=True
+        )
+        self.like = Like.objects.create(
+            user=self.user,
+            post=self.post
+        )
+
+    def test_like_creation(self):
+        self.assertEqual(Like.objects.count(), 1)
+        like = Like.objects.first()
+        self.assertEqual(like.user, self.user)
+        self.assertEqual(like.post, self.post)
+
+
+class CommentModelTestCase(TestCase):
+    def setUp(self):
+        self.user = MyUser.objects.create_user(
+            email='test@example.com',
+            username='testuser',
+            password='testpassword'
+        )
+        self.post = PostModel.objects.create(
+            user=self.user,
+            caption='Test caption',
+            slug='test-post',
+            is_active=True
         )
         self.comment = Comment.objects.create(
-            comment_text="Test comment",
+            comment_text='Test comment',
             user=self.user,
             post=self.post
         )
-    
-    def test_str_representation(self):
-        self.assertEqual(str(self.comment), "comment on test-post")
 
-class ReportTestCase(TestCase):
+    def test_comment_creation(self):
+        self.assertEqual(Comment.objects.count(), 1)
+        comment = Comment.objects.first()
+        self.assertEqual(comment.comment_text, 'Test comment')
+        self.assertEqual(comment.user, self.user)
+        self.assertEqual(comment.post, self.post)
+
+
+class SendPostModelTestCase(TestCase):
     def setUp(self):
-        self.user = MyUser.objects.create_user(
-            email="test@example.com",
-            username="testuser",
-            password="testpassword"
+        self.sender = MyUser.objects.create_user(
+            email='sender@example.com',
+            username='senderuser',
+            password='senderpassword'
+        )
+        self.recipient = MyUser.objects.create_user(
+            email='recipient@example.com',
+            username='recipientuser',
+            password='recipientpassword'
         )
         self.post = PostModel.objects.create(
-            user=self.user,
-            caption="Test post",
-            slug="test-post"
+            user=self.sender,
+            caption='Test caption',
+            slug='test-post',
+            is_active=True
         )
-        self.account = MyUser.objects.create_user(
-            email="account@example.com",
-            username="testaccount",
-            password="testpassword"
-        )
-        self.report1 = Report.objects.create(
-            user=self.user,
+        self.send_post = SendPost.objects.create(
+            sender=self.sender,
+            recipient=self.recipient,
             post=self.post,
-            reason="Inappropriate content"
+            sent_at=timezone.now()
         )
-        self.report2 = Report.objects.create(
-            user=self.user,
-            account=self.account,
-            reason="Spam"
-        )
-    
+
+    def test_send_post_creation(self):
+        self.assertEqual(SendPost.objects.count(), 1)
+        send_post = SendPost.objects.first()
+        self.assertEqual(send_post.sender, self.sender)
+        self.assertEqual(send_post.recipient, self.recipient)
+        self.assertEqual(send_post.post, self.post)

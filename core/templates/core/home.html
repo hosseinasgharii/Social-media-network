@@ -1,6 +1,47 @@
 {% extends 'base.html' %}
 {% block content %}
+{% load static %}
+<body>
+    <script src="{% static 'js/home.js' %}"></script>
+    <link rel="stylesheet" type="text/css" href="{% static 'css/home.css' %}">
+    <nav class="navbar navbar-toggleable-md fixed-top navbar-transparent" color-on-scroll="500">
+        <div class="container">
+            <div class="collapse navbar-collapse" id="navbarToggler">
+                <ul class="navbar-nav ml-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" rel="tooltip" title="Star on GitHub" data-placement="bottom" href="https://www.github.com/" target="_blank">
+                            <i class="fa fa-github"></i>
+                            <p class="hidden-lg-up">GitHub</p>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+						<a href="accounts:login" target="_blank" class="btn btn-danger btn-round">Login</a>
+					</li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    <div class="wrapper">
+        <div class="page-header section-dark" style="background-image: url('http://demos.creative-tim.com/paper-kit-2/assets/img/antoine-barres.jpg')">
+            <div class="filter"></div>
+    		<div class="content-center">
+    			<div class="container">
+    				<div class="title-brand">
+    					<h1 class="presentation-title">Welcome To Social Network</h1>
+    					<div class="fog-low">
+    						<img src="http://demos.creative-tim.com/paper-kit-2/assets/img/fog-low.png" alt="">
+    					</div>
+    					<div class="fog-low right">
+    						<img src="http://demos.creative-tim.com/paper-kit-2/assets/img/fog-low.png" alt="">
+    					</div>
+    				</div>
+    			</div>
+    		</div>
+            <div class="moving-clouds" style="background-image: url('http://demos.creative-tim.com/paper-kit-2/assets/img/clouds.png'); ">
 
-    <h1 align="center">home page</h1>
- 
+            </div>
+    	</div>
+  </div>
+</body>
+
  {% endblock content %}

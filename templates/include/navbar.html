@@ -1,36 +1,34 @@
 <nav class="navbar navbar-expand-lg bg-body-tertiary">
-    <div class="container-fluid">
-      <a class="navbar-brand" href="#">Navbar</a>
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-      </button>
+  <div class="container-fluid">
+      <a class="navbar-brand" href="" style="color: rgb(32, 218, 193); font-size: 25px;">Social</a>
+
       <div class="collapse navbar-collapse" id="navbarSupportedContent">
-        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-          <li class="nav-item">
-            <a class="nav-link active" aria-current="page" href="#">Home</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="#">log in</a>
-          </li>
-          <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-              Dropdown
-            </a>
-            <ul class="dropdown-menu">
-              <li><a class="dropdown-item" href="#">Action</a></li>
-              <li><a class="dropdown-item" href="#">Another action</a></li>
-              <li><hr class="dropdown-divider"></li>
-              <li><a class="dropdown-item" href="#">Something else here</a></li>
-            </ul>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link disabled">Disabled</a>
-          </li>
-        </ul>
-        <form class="d-flex" role="search">
-          <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
-          <button class="btn btn-outline-success" type="submit">Search</button>
-        </form>
+          <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+              <li class="nav-item">
+                  <a class="nav-link active" aria-current="page" href="{% url 'core:home' %}" style="color: goldenrod; font-size: 20px;">Home</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="{% url 'accounts:login' %}" style="color: red; font-size: 18px;">Log in</a>              </li>
+              <li class="nav-item ">
+                    <a class="nav-link" href="{% url 'accounts:signup' %}" style="color: purple; font-size: 18px;">Sign up</a>
+              </li>
+          </ul>
+          <form class="d-flex" role="search">
+            {% if request.user.is_authenticated  %}
+              <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
+              <button class="btn btn-outline-success" type="submit">Search</button>
+            {% endif %}  
+          </form>
+          {% if request.user.is_authenticated  %}
+          <a href="{% url 'accounts:logout' %}"><button class="btn btn-outline-primary ms-2" type="button" onclick="logout()">Logout</button></a>
+          {% endif %}
       </div>
-    </div>
-  </nav>
+  </div>
+</nav>
+
+<script>
+  function logout() {
+      // Add your logout logic here
+      console.log('Logout button clicked');
+  }
+</script>

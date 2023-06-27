@@ -1,9 +1,9 @@
-from django.shortcuts import render
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404 , redirect
 from django.http import HttpResponse
 from django.views.decorators.http import require_POST
-from .models import PostModel, Comment, Report
+from .models import PostModel, Comment, Report , SendPost
 from accounts.models import MyUser
+from django.contrib.auth.decorators import login_required
 
 def create_post(request):
     if request.method == 'POST':
@@ -15,7 +15,7 @@ def create_post(request):
         post = PostModel(user=user, caption=caption, slug=slug, location=location)
         post.save()
         
-        return ('post_detail', slug=slug)
+        return redirect('post')
     
     return render(request, 'create_post.html')
 
@@ -69,3 +69,11 @@ def report_account(request):
     account = get_object_or_404(MyUser, id=account_id)
     Report.objects.create(user=request.user, account=account, reason=reason)
     return HttpResponse({'message': 'Account reported successfully'})
+
+@login_required
+def send_post(request, post_id, recipient_id):
+    post = get_object_or_404(PostModel, id=post_id)
+    recipient = get_object_or_404(MyUser, id=recipient_id)
+    sent_post = SendPost(sender=request.user, recipient=recipient, post=post)
+    sent_post.save()
+    return HttpResponse("Post sent successfully!")
