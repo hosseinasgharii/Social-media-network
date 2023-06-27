@@ -62,10 +62,8 @@ def profile(request):
 @login_required
 def edit_profile(request):
     if request.method == 'POST':
-        # Handle profile edit form submission
         user = request.user
 
-        # Update user profile data
         user.firstname = request.POST['firstname']
         user.lastname = request.POST['lastname']
         user.bio = request.POST['bio']
@@ -77,8 +75,7 @@ def edit_profile(request):
         messages.success(request, "Profile updated successfully.")
         return redirect('profile')
     else:
-        # Render the edit profile form
-        return render(request, 'edit_profile.html')
+        return render(request, 'accounts/edit_profile.html')
 
 
 @login_required
