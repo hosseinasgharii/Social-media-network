@@ -170,3 +170,26 @@ class Relationship(models.Model):
 
     def __str__(self):
         return f'{self.follower.username} -> {self.following.username}'
+
+
+class Report(models.Model):
+    user = models.ForeignKey(
+        MyUser,
+        on_delete=models.CASCADE,
+        related_name="reporter_user"
+        )
+    account = models.ForeignKey(
+        MyUser,
+        on_delete=models.CASCADE,
+        related_name='reported_accounts',
+        blank=True,
+        null=True)
+    reason = models.TextField(
+        max_length=500
+        )
+
+    def __str__(self):
+        if self.account:
+            return f"Report on account: {self.account.username}"
+        else:
+            return "Invalid report"

@@ -19,9 +19,9 @@ def signup(request):
             password=password
             )
 
-        return redirect('login')
+        return redirect('accounts:login')
 
-    return render(request, 'signup.html')
+    return render(request, 'accounts/signup.html')
 
 
 def user_login(request):
@@ -34,25 +34,25 @@ def user_login(request):
         if user is not None:
             login(request, user)
             messages.success(request, "Logged in successfully.")
-            return redirect('home')
+            return redirect('accounts:profile')
         else:
             messages.error(request, "Invalid email or password.")
-            return render(request, 'login')
+            return render('accounts/login.html')
 
-    return render(request, 'login.html')
+    return render(request, 'accounts/login.html')
 
 
 @login_required
 def user_logout(request):
     logout(request)
     messages.success(request, "Logged out successfully.")
-    return redirect('login')
+    return redirect('accounts:login')
 
 
 @login_required
 def profile(request):
     user = request.user
-    return render(request, 'profile.html', {'user': user})
+    return render(request, 'accounts/profile.html', {'user': user})
 
 
 @login_required

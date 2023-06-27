@@ -131,19 +131,16 @@ class Comment(models.Model):
 class Report(models.Model):
     user = models.ForeignKey(
         MyUser,
-        on_delete=models.CASCADE
+        on_delete=models.CASCADE,
+        related_name="reporter"
         )
     post = models.ForeignKey(
         PostModel,
         on_delete=models.CASCADE,
         blank=True,
-        null=True)
-    account = models.ForeignKey(
-        MyUser,
-        on_delete=models.CASCADE,
-        related_name='reported_accounts',
-        blank=True,
-        null=True)
+        null=True,
+        related_name="reported_post"
+        )
     reason = models.TextField(
         max_length=500
         )
@@ -151,8 +148,6 @@ class Report(models.Model):
     def __str__(self):
         if self.post:
             return f"Report on post: {self.post.slug}"
-        elif self.account:
-            return f"Report on account: {self.account.username}"
         else:
             return "Invalid report"
 
