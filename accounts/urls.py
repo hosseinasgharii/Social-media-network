@@ -1,17 +1,30 @@
 from django.urls import path
-from . import views
+from accounts.views import (
+    UserSignupView,
+    UserLoginView,
+    UserLogoutView,
+    UserProfileView,
+    UserEditProfileView,
+    FollowView,
+    UnfollowView,
+    FollowerListView,
+    FollowingListView,
+    PostsView,
+    BlockUserView,
+)
 
 app_name = 'accounts'
+
 urlpatterns = [
-    path('signup/', views.signup, name='signup'),
-    path('login/', views.user_login, name='login'),
-    path('logout/', views.user_logout, name='logout'),
-    path('profile/', views.profile, name='profile'),
-    path('edit-profile/', views.edit_profile, name='edit_profile'),
-    path('follow/<str:username>/', views.follow, name='follow'),
-    path('unfollow/<str:username>/', views.unfollow, name='unfollow'),
-    path('followers/', views.follower_list, name='follower_list'),
-    path('following/', views.following_list, name='following_list'),
-    path('posts/', views.posts, name='posts'),
-    path('block/<str:username>/', views.block_user, name='block_user'),
+    path('signup/', UserSignupView.as_view(), name='signup'),
+    path('login/', UserLoginView.as_view(), name='login'),
+    path('logout/', UserLogoutView.as_view(), name='logout'),
+    path('profile/', UserProfileView.as_view(), name='profile'),
+    path('edit-profile/', UserEditProfileView.as_view(), name='edit_profile'),
+    path('follow/<str:username>/', FollowView.as_view(), name='follow'),
+    path('unfollow/<str:username>/', UnfollowView.as_view(), name='unfollow'),
+    path('followers/', FollowerListView.as_view(), name='follower_list'),
+    path('following/', FollowingListView.as_view(), name='following_list'),
+    path('posts/', PostsView.as_view(), name='posts'),
+    path('block-user/<int:user_id>/', BlockUserView.as_view(), name='block_user'),
 ]
