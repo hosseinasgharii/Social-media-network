@@ -159,4 +159,3 @@ class BlockUserView(LoginRequiredMixin, View):
                 return HttpResponse("User is already blocked.")
 
         return HttpResponse("Invalid request.")
-    
