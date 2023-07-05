@@ -8,6 +8,7 @@ from posts.views import (
     ReplyCommentView,
     ReportPostView,
     ReportAccountView,
+    PostEditView
 )
 
 app_name = 'posts'
@@ -21,4 +22,6 @@ urlpatterns = [
     path('reply-comment/', ReplyCommentView .as_view(), name='reply_comment'),
     path('report-post/', ReportPostView.as_view(), name='report_post'),
     path('report-account/', ReportAccountView.as_view(), name='report_account'),
+    path('edit-post/<post_id>', PostEditView.as_view(), name='edit_post'),
+
 ]

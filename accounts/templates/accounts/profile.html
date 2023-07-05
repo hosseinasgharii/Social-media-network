@@ -5,81 +5,85 @@
 <link rel="stylesheet" type="text/css" href="{% static 'css/profile.css' %}">
 
 <header>
-
 	<div class="container">
-
 		<div class="profile">
-
 			<div class="profile-image">
-
 				<img src="https://images.unsplash.com/photo-1513721032312-6a18a42c8763?w=152&h=152&fit=crop&crop=faces" alt="">
-
 			</div>
-
 			<div class="profile-user-settings">
-
-				<h1 class="profile-user-name" style="color: purple; font-size: 35px;">{{user.username}} </h1>
-
-				<a href='{% url "accounts:edit_profile" %}'> <button class="btn profile-edit-btn">Edit Profile</button> </a>
-
-				<button class="btn profile-settings-btn" aria-label="profile settings"><i class="fas fa-cog" aria-hidden="true"></i></button>
-
+				<h1 class="profile-user-name" style="color: purple; font-size: 35px;">{{user.username}}</h1>
+				{% if request.user == user %}
+				<a href='{% url "accounts:edit_profile" %}'>
+					<button class="btn profile-edit-btn">Edit Profile</button>
+				</a>
+				<a href='{% url "posts:create_post" %}'>
+					<button class="btn profile-edit-btn">Create Post</button>
+				</a>
+				{% endif %}
+				<button class="btn profile-settings-btn" aria-label="profile settings">
+					<i class="fas fa-cog" aria-hidden="true"></i>
+				</button>
 			</div>
-
 			<div class="profile-stats">
-
 				<ul>
-					<li><span class="profile-stat-count">post</span> posts</li>
-					<a href="{% url 'accounts:follower_list' user.id %}" ><li><span class="profile-stat-count">{{ user.follower_count }}</span> followers</li></a>
-					<a href="{% url 'accounts:following_list' user.id %}" ><li><span class="profile-stat-count"> {{ user.following_count }}</span> following</li></a>
+					<li><span class="profile-stat-count">{{ user.post_count }}</span> posts</li>
+					<a href="{% url 'accounts:follower_list' user.id %}">
+						<li><span class="profile-stat-count">{{ user.follower_count }}</span> followers</li>
+					</a>
+					<a href="{% url 'accounts:following_list' user.id %}">
+						<li><span class="profile-stat-count"> {{ user.following_count }}</span> following</li>
+					</a>
 				</ul>
-
 			</div>
-
 			<div class="profile-bio">
-
-				<p><span class="profile-real-name">{{user.bio}}</span>  </p>
-
+				<p><span class="profile-real-name">{{user.bio}}</span></p>
 			</div>
-
 		</div>
 		<!-- End of profile section -->
-
 	</div>
 	<!-- End of container -->
-
 </header>
 
 <main>
-
 	<div class="container">
-
-		<div class="gallery">
-
-			<div class="gallery-item" tabindex="0">
-
-				<img src="https://images.unsplash.com/photo-1511765224389-37f0e77cf0eb?w=500&h=500&fit=crop" class="gallery-image" alt="">
-
-				<div class="gallery-item-info">
-
-					<ul>
-						<li class="gallery-item-likes"><span class="visually-hidden">Likes:</span><i class="fas fa-heart" aria-hidden="true"></i> 56</li>
-						<li class="gallery-item-comments"><span class="visually-hidden">Comments:</span><i class="fas fa-comment" aria-hidden="true"></i> 2</li>
-					</ul>
-
-				</div>
-
-			</div>
-
-			</div>
-
+		<div id="loader" class="loader"></div>
+		<div id="post-container">
+			{% for post in user.posts %}
+				{% for image in post.images.all %}
+					<a href="{% url 'posts:post_detail' post.slug %}"><img style="height: 100px; width: auto;" src="{{ image.image.url}}" alt="{{image.alt}}"></a>
+				{% endfor %}
+			{% endfor %}
 		</div>
-		<!-- End of gallery -->
-
-		<div class="loader"></div>
-
 	</div>
 	<!-- End of container -->
-
 </main>
+
+<script>
+	// Hide the loader and show the posts
+	window.addEventListener('load', function () {
+		var loader = document.getElementById('loader');
+		var postContainer = document.getElementById('post-container');
+		
+		loader.style.display = 'none';
+		postContainer.style.display = 'block';
+	});
+
+	// Hide the loader after posting a new post
+	function hideLoader() {
+		var loader = document.getElementById('loader');
+		loader.style.display = 'none';
+	}
+
+	// Example function to simulate posting a new post
+	function addNewPost() {
+		// Simulating a delay to mimic the time it takes to post a new post
+		setTimeout(function () {
+			// Code to add the new post
+
+			// After the new post is added, hide the loader
+			hideLoader();
+		}, 2000);
+	}
+</script>
+
 {% endblock content %}

@@ -1,35 +1,45 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.http import HttpResponse
 from django.views.decorators.http import require_POST
-from .models import PostModel, Comment, Report, SendPost
+from .models import PostModel, Comment, Report, SendPost, Image
 from accounts.models import MyUser
 from django.contrib.auth.decorators import login_required
 from django.views import View
-from .forms import CreatePostForm, CommentForm, ReplyForm, ReportForm
+from .forms import CreatePostForm, CommentForm, ReplyForm, ReportForm, PostForm
+from django.utils.text import slugify
 
 
 class CreatePostView(View):
     def get(self, request):
         form = CreatePostForm()
-        return render(request, 'create_post.html', {'form': form})
+        return render(request, 'posts/create_post.html', {'form': form})
 
     def post(self, request):
-        form = CreatePostForm(request.POST)
+        form = CreatePostForm(request.POST, request.FILES)
         if form.is_valid():
-            user_id = form.cleaned_data['user_id']
+            user_id = request.user.id
             caption = form.cleaned_data['caption']
-            slug = form.cleaned_data['slug']
+            slug = slugify(form.cleaned_data['caption'][:20])
             location = form.cleaned_data['location']
+            image = form.cleaned_data['image']
             user = MyUser.objects.get(id=user_id)
             post = PostModel(
                 user=user,
                 caption=caption,
                 slug=slug,
                 location=location
-                )
+            )
             post.save()
-            return redirect('post')
-        return render(request, 'create_post.html', {'form': form})
+
+            Image.objects.create(
+                name=image.name,
+                alt="",
+                image=image,
+                post=post
+            )
+
+            return redirect('accounts:profile', request.user.id)
+        return render(request, 'posts/create_post.html', {'form': form})
 
 
 class PostDetailView(View):
@@ -38,9 +48,21 @@ class PostDetailView(View):
         comments = Comment.objects.filter(post=post, parent=None)
         return render(
             request,
-            'post_detail.html',
+            'posts/post_detail.html',
             {'post': post, 'comments': comments}
             )
+    
+    def post(self, request, slug):
+        form = CommentForm(request.POST)
+        if form.is_valid():
+            comment_text = form.cleaned_data['comment_text']
+            post = get_object_or_404(PostModel, slug=slug)
+            Comment.objects.create(
+                comment_text=comment_text,
+                user=request.user,
+                post=post)
+            return redirect("posts:post_detail", slug)
+        return redirect("posts:post_detail", slug)
 
 
 class LikePostView(View):
@@ -135,3 +157,29 @@ class SendPostView(View):
             post=post)
         sent_post.save()
         return HttpResponse("Post sent successfully!")
+
+
+class PostEditView(View):
+    def get(self, request, post_id):
+        post = get_object_or_404(PostModel, id=post_id, user=request.user)
+        form = PostForm(instance=post)
+        return render(request, 'posts/edit_post.html', {'form': form, 'post': post})
+
+    def post(self, request, post_id):
+        post = get_object_or_404(PostModel, id=post_id, user=request.user)
+        form = PostForm(request.POST, instance=post)
+        if form.is_valid():
+            form.save()
+            return redirect('posts:post_detail', post.slug)
+        return render(request, 'posts/edit_post.html', {'form': form, 'post': post})
+
+
+class PostDeleteView(View):
+    def get(self, request, post_id):
+        post = get_object_or_404(PostModel, id=post_id, user=request.user)
+        return render(request, 'delete_post.html', {'post': post})
+
+    def post(self, request, post_id):
+        post = get_object_or_404(PostModel, id=post_id, user=request.user)
+        post.delete()
+        return redirect('display_user_posts')

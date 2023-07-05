@@ -152,12 +152,18 @@ class MyUser(AbstractBaseUser):
 
     def following_count(self):
         return self.follower_relation.count()
-    
+
     def get_followers(self):
         return self.following_relation.all()
 
     def get_following(self):
         return self.follower_relation.all()
+    
+    def post_count(self):
+        return self.show_post.count()
+
+    def posts(self):
+        return self.show_post.all()
 
 
 class Relationship(models.Model):

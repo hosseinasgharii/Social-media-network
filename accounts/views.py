@@ -49,7 +49,7 @@ class UserLoginView(View):
             if user is not None:
                 login(request, user)
                 messages.success(request, "Logged in successfully.")
-                return redirect('accounts:profile')
+                return redirect('accounts:profile', request.user.id)
 
         messages.error(request, "Invalid email or password.")
         return render(request, 'accounts/login.html', {'form': form})

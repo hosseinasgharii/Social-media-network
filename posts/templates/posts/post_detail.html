@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Post Detail</title>
+</head>
+<body>
+    
+    <h1>Post Detail</h1>
+    <a href="{% url "posts:edit_post" post.id %}" class="btn btn-primary">Edit</a>
+    <h2>{{ post.slug }}</h2>
+    <p>{{ post.caption }}</p>
+    <p>Created At: {{ post.create_time }}</p>
+    <p>Last Updated At: {{ post.update_time }}</p>
+    <p>Location: {{ post.location }}</p>
+
+    <h3>Comments</h3>
+    <ul>
+        {% for comment in comments %}
+        <li>
+            <p>{{ comment.comment_text }}</p>
+            <p>Commented by: {{ comment.user }}</p>
+            <p>Created At: {{ comment.create_time }}</p>
+            {% if comment.child.count > 0 %}
+            <ul>
+                {% for reply in comment.child.all %}
+                <li>
+                    <p>{{ reply.comment_text }}</p>
+                    <p>Replied by: {{ reply.user }}</p>
+                    <p>Created At: {{ reply.create_time }}</p>
+                </li>
+                {% endfor %}
+            </ul>
+            {% endif %}
+        </li>
+        {% endfor %}
+    </ul>
+    <form action="" method="post"> {% csrf_token %} <input type="text" name="comment_text" placeholder="comment">
+        <input type="submit" value="send"></form>
+</body>
+</html>

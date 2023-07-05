@@ -4,7 +4,7 @@
   <h2>Following</h2>
   <ul>
     {% for following_user in following %}
-      <li>{{ following_user.following.username }}</li>
+      <a href="{% url 'accounts:profile' following_user.following.id %}"><li>{{ following_user.following.username }}</li></a>
     {% empty %}
       <li>Not following anyone yet.</li>
     {% endfor %}
