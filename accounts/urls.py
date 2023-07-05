@@ -23,8 +23,8 @@ urlpatterns = [
     path('edit-profile/', UserEditProfileView.as_view(), name='edit_profile'),
     path('follow/<str:username>/', FollowView.as_view(), name='follow'),
     path('unfollow/<str:username>/', UnfollowView.as_view(), name='unfollow'),
-    path('followers/', FollowerListView.as_view(), name='follower_list'),
-    path('following/', FollowingListView.as_view(), name='following_list'),
+    path('followers/<int:user_id>/', FollowerListView.as_view(), name='follower_list'),
+    path('following/<int:user_id>/', FollowingListView.as_view(), name='following_list'),
     path('posts/', PostsView.as_view(), name='posts'),
     path('block-user/<int:user_id>/', BlockUserView.as_view(), name='block_user'),
 ]

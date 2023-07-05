@@ -147,19 +147,31 @@ class MyUser(AbstractBaseUser):
         """
         return self.blocked_users.filter(id=user.id).exists()
 
+    def follower_count(self):
+        return self.following_relation.count()
+
+    def following_count(self):
+        return self.follower_relation.count()
+    
+    def get_followers(self):
+        return self.following_relation.all()
+
+    def get_following(self):
+        return self.follower_relation.all()
+
 
 class Relationship(models.Model):
     follower = models.ForeignKey(
         MyUser,
-        related_name='following_relations',
-        related_query_name='following_relation',
+        related_name='follower_relation',
+        related_query_name='follower_relation',
         on_delete=models.CASCADE,
         verbose_name="Follower"
         )
     following = models.ForeignKey(
         MyUser,
-        related_name='follower_relations',
-        related_query_name='follower_relation',
+        related_name='following_relation',
+        related_query_name='following_relation',
         on_delete=models.CASCADE,
         verbose_name="Following"
         )

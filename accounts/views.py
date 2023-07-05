@@ -69,7 +69,9 @@ class UserLogoutView(View):
 class UserProfileView(LoginRequiredMixin, View):
     def get(self, request, user_id):
         user = get_object_or_404(MyUser, pk=user_id)
-        return render(request, 'accounts/profile.html', {'user': user})
+        post = PostModel.objects.filter(user=user)
+        context = {'user': user, 'post': post}
+        return render(request, 'accounts/profile.html', context=context)
 
 
 class UserEditProfileView(LoginRequiredMixin, View):
@@ -117,26 +119,26 @@ class UnfollowView(LoginRequiredMixin, View):
         return redirect('accounts:profile')
 
 
-class FollowerListView(LoginRequiredMixin, TemplateView):
-    template_name = 'follower_list.html'
+class FollowerListView(LoginRequiredMixin, View):
+    def get(self, request, user_id):
+        user = get_object_or_404(MyUser, pk=user_id)
+        followers = user.get_followers()
+        context = {
+            'user': user,
+            'followers': followers
+        }
+        return render(request, 'accounts/follower_list.html', context)
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['followers'] = Relationship.objects.filter(
-            following=self.request.user
-            )
-        return context
 
-
-class FollowingListView(LoginRequiredMixin, TemplateView):
-    template_name = 'following_list.html'
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['followings'] = Relationship.objects.filter(
-            follower=self.request.user
-            )
-        return context
+class FollowingListView(LoginRequiredMixin, View):
+    def get(self, request, user_id):
+        user = get_object_or_404(MyUser, pk=user_id)
+        following = user.get_following()
+        context = {
+            'user': user,
+            'following': following
+        }
+        return render(request, 'accounts/following_list.html', context)
 
 
 class PostsView(LoginRequiredMixin, TemplateView):
