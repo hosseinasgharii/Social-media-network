@@ -18,15 +18,10 @@ class UserSignupView(View):
         form = UserSignupForm(request.POST)
 
         if form.is_valid():
-            email = form.cleaned_data['email']
-            username = form.cleaned_data['username']
+            user = form.save(commit=False)
             password = form.cleaned_data['password']
-
-            MyUser.objects.create_user(
-                email=email,
-                username=username,
-                password=password
-                )
+            user.set_password(password)
+            user.save()
             return redirect('accounts:login')
 
         return render(request, 'accounts/signup.html', {'form': form})
