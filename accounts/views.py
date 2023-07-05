@@ -66,8 +66,10 @@ class UserLogoutView(View):
         return redirect('accounts:login')
 
 
-class UserProfileView(LoginRequiredMixin, TemplateView):
-    template_name = 'accounts/profile.html'
+class UserProfileView(LoginRequiredMixin, View):
+    def get(self, request, user_id):
+        user = get_object_or_404(MyUser, pk=user_id)
+        return render(request, 'accounts/profile.html', {'user': user})
 
 
 class UserEditProfileView(LoginRequiredMixin, View):
@@ -81,7 +83,7 @@ class UserEditProfileView(LoginRequiredMixin, View):
         if form.is_valid():
             form.save()
             messages.success(request, "Profile updated successfully.")
-            return redirect('accounts:profile')
+            return redirect('accounts:profile', request.user.id)
         else:
             messages.error(request, "Error updating profile.")
             return render(

@@ -7,7 +7,8 @@ from django.utils import timezone
 class PostModel(models.Model):
     user = models.ForeignKey(
         MyUser,
-        on_delete=models.CASCADE
+        on_delete=models.CASCADE,
+        related_name="show_post"
         )
     caption = models.TextField(
         blank=True,
