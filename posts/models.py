@@ -36,12 +36,15 @@ class PostModel(models.Model):
         default=True,
         verbose_name="Active"
         )
+    
 
     def report_post(self, user, reason):
         Report.objects.create(user=user, post=self, reason=reason)
 
     def __str__(self) -> str:
         return self.slug
+    
+    
 
 
 class Image(models.Model):
