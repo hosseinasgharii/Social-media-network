@@ -58,8 +58,14 @@ class PostModel(models.Model):
     def like_post(self, user):
         self.likes.add(user)
 
+    def remove_like(self, user):
+        self.likes.remove(user)
+
     def dislike_post(self, user):
-        self.likes.add(user)
+        self.dislikes.add(user)
+
+    def remove_dislike(self, user):
+        self.dislikes.remove(user)
 
 
 class Image(models.Model):
@@ -103,8 +109,34 @@ class Like(models.Model):
         verbose_name = _("Like")
         verbose_name_plural = _("Likes")
 
+    @staticmethod
+    def is_like(post, user):
+        return Like.objects.filter(post=post, user=user).exists()    
+
     def __str__(self):
         return f"{self.user.username} liked {self.post.slug}"
+
+
+class DisLike(models.Model):
+    user = models.ForeignKey(
+        MyUser,
+        on_delete=models.CASCADE
+        )
+    post = models.ForeignKey(
+        PostModel,
+        on_delete=models.CASCADE
+        )
+
+    class Meta:
+        verbose_name = _("Dislike")
+        verbose_name_plural = _("Dislikes")
+        
+    @staticmethod
+    def is_dislike(self, user):
+        return Like.objects.get(post=self, user=user).exists()    
+
+    def __str__(self):
+        return f"{self.user.username} disliked {self.post.slug}"
 
 
 class Comment(models.Model):

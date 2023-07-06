@@ -1,7 +1,7 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.http import HttpResponse
 from django.views.decorators.http import require_POST
-from .models import PostModel, Comment, Report, SendPost, Image
+from .models import PostModel, Comment, Report, SendPost, Image, Like, DisLike
 from accounts.models import MyUser
 from django.contrib.auth.decorators import login_required
 from django.views import View
@@ -47,10 +47,11 @@ class PostDetailView(View):
     def get(self, request, slug):
         post = get_object_or_404(PostModel, slug=slug)
         comments = Comment.objects.filter(post=post, parent=None)
+        is_like = Like.is_like(post, request.user)
         return render(
             request,
             'posts/post_detail.html',
-            {'post': post, 'comments': comments}
+            {'post': post, 'comments': comments, 'is_like': is_like}
             )
 
     def post(self, request, slug):
@@ -66,8 +67,8 @@ class PostDetailView(View):
         return redirect("posts:post_detail", slug)
 
 
-@method_decorator(require_POST, name='dispatch')
 class LikePostView(View):
+    @method_decorator(require_POST)
     def post(self, request):
         post_id = request.POST.get('post_id')
         post = PostModel.objects.get(id=post_id)
@@ -75,13 +76,31 @@ class LikePostView(View):
         return HttpResponse({'message': 'Post liked successfully'})
 
 
-@method_decorator(require_POST, name='dispatch')
 class UnlikePostView(View):
+    @method_decorator(require_POST)
     def post(self, request):
         post_id = request.POST.get('post_id')
         post = PostModel.objects.get(id=post_id)
-        post.unlike_post(request.user)
+        post.remove_like(request.user)
         return HttpResponse({'message': 'Post unliked successfully'})
+
+
+class DislikePostView(View):
+    @method_decorator(require_POST)
+    def post(self, request):
+        post_id = request.POST.get('post_id')
+        post = PostModel.objects.get(id=post_id)
+        post.dislike_post(request.user)
+        return HttpResponse({'message': 'Post dislike successfully'})
+    
+    
+class UndislikePostView(View):
+    @method_decorator(require_POST)
+    def post(self, request):
+        post_id = request.POST.get('post_id')
+        post = PostModel.objects.get(id=post_id)
+        post.remove_dislike(request.user)
+        return HttpResponse({'message': 'Post undisliked successfully'})    
 
 
 class CommentPostView(View):
@@ -101,7 +120,7 @@ class CommentPostView(View):
 
 
 class ReplyCommentView(View):
-    @require_POST
+    @method_decorator(require_POST)
     def post(self, request):
         comment_id = request.POST.get('comment_id')
         form = ReplyForm(request.POST)
@@ -144,8 +163,8 @@ class ReportAccountView(View):
                 account=account,
                 reason=reason
                 )
-            return HttpResponse({'message': 'Account reported successfully'})
-        return HttpResponse({'message': 'Invalid form data'})
+            return redirect("posts:post_detail", request.user.id)
+        return redirect("posts:post_detail", request.user.id)
 
 
 class SendPostView(View):
@@ -192,7 +211,7 @@ class PostDeleteView(View):
     def post(self, request, post_id):
         post = get_object_or_404(PostModel, id=post_id, user=request.user)
         post.delete()
-        return redirect(reverse_lazy('accounts/profile.html'))
+        return redirect('accounts:profile', request.user.id)
 
 
 class DeleteCommentView(View):

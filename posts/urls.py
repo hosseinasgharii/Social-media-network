@@ -10,8 +10,9 @@ from posts.views import (
     ReportAccountView,
     PostEditView,
     DeleteCommentView,
-    PostDeleteView
-
+    PostDeleteView,
+    DislikePostView,
+    UndislikePostView
 )
 
 app_name = 'posts'
@@ -20,7 +21,9 @@ urlpatterns = [
     path('create-post/', CreatePostView.as_view(), name='create_post'),
     path('post/<slug:slug>/', PostDetailView.as_view(), name='post_detail'),
     path('like/', LikePostView.as_view(), name='like_post'),
-    path('unlike/', UnlikePostView.as_view(), name='unlike_post'),
+    path('unlike/', UnlikePostView.as_view(), name='remove_like'),
+    path('dislike/', DislikePostView.as_view(), name='dislike_post'),
+    path('undislike/', UndislikePostView.as_view(), name='remove_dislike'),
     path('comment-post/', CommentPostView.as_view(), name='comment_post'),
     path('reply-comment/', ReplyCommentView .as_view(), name='reply_comment'),
     path('report-post/', ReportPostView.as_view(), name='report_post'),

@@ -170,8 +170,7 @@ class MyUser(AbstractBaseUser):
         return self.show_post.all()
 
     def delete_account(self):
-        self.is_deleted = True
-        self.save()
+        self.delete()
 
 
 class Relationship(models.Model):
