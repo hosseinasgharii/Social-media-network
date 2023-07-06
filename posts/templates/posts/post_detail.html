@@ -2,11 +2,84 @@
 <html>
 <head>
     <title>Post Detail</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            // Handle like post form submission
+            $('#like-post-form').submit(function(event) {
+                event.preventDefault(); // Prevent the default form submission
+
+                // Get the post ID
+                var postId = $(this).find('input[name="post_id"]').val();
+
+                // Send an AJAX POST request to like_post endpoint
+                $.ajax({
+                    url: '{% url "posts:like_post" %}',
+                    type: 'post',
+                    data: {
+                        'post_id': postId,
+                        'csrfmiddlewaretoken': '{{ csrf_token }}'
+                    },
+                    success: function(response) {
+                        // Update the like count
+                        $('#like-count').text(response.like_count);
+                    },
+                    error: function(xhr, errmsg, err) {
+                        // Handle errors, if any
+                        console.log(xhr.status + ": " + xhr.responseText);
+                    }
+                });
+            });
+
+            // Handle unlike post form submission
+            $('#unlike-post-form').submit(function(event) {
+                event.preventDefault(); // Prevent the default form submission
+
+                // Get the post ID
+                var postId = $(this).find('input[name="post_id"]').val();
+
+                // Send an AJAX POST request to unlike_post endpoint
+                $.ajax({
+                    url: '{% url "posts:unlike_post" %}',
+                    type: 'post',
+                    data: {
+                        'post_id': postId,
+                        'csrfmiddlewaretoken': '{{ csrf_token }}'
+                    },
+                    success: function(response) {
+                        // Update the like count
+                        $('#like-count').text(response.like_count);
+                    },
+                    error: function(xhr, errmsg, err) {
+                        // Handle errors, if any
+                        console.log(xhr.status + ": " + xhr.responseText);
+                    }
+                });
+            });
+        });
+    </script>
 </head>
 <body>
     
     <h1>Post Detail</h1>
+    <form id="like-post-form" method="post">
+        {% csrf_token %}
+        <input type="hidden" name="post_id" value="{{ post.id }}">
+        <button type="submit">Like</button>
+    </form>
+    <form id="dislike-post-form" method="post">
+        {% csrf_token %}
+        <input type="hidden" name="post_id" value="{{ post.id }}">
+        <button type="submit">Dislike</button>
+    </form>
+    <p>Like count: <span id="like-count">{{ post.likes.count }}</span></p>
+    <p>Dislike count: <span id="dislike-count">{{ post.dislikes.count }}</span></p>
     <a href="{% url "posts:edit_post" post.id %}" class="btn btn-primary">Edit</a>
+    <form action="{% url 'posts:delete_post' post.id %}" method="post">
+        {% csrf_token %}
+        <button type="submit">Delete</button>
+    </form>
+    
     <h2>{{ post.slug }}</h2>
     <p>{{ post.caption }}</p>
     <p>Created At: {{ post.create_time }}</p>
@@ -31,10 +104,19 @@
                 {% endfor %}
             </ul>
             {% endif %}
+            <form action="" method="post">
+                {% csrf_token %}
+                <input type="hidden" name="comment_id" value="{{ comment.id }}">
+                <input type="text" name="reply_text" placeholder="Reply to this comment">
+                <input type="submit" value="Reply">
+            </form>
         </li>
         {% endfor %}
     </ul>
-    <form action="" method="post"> {% csrf_token %} <input type="text" name="comment_text" placeholder="comment">
-        <input type="submit" value="send"></form>
+    <form action="" method="post">
+        {% csrf_token %}
+        <input type="text" name="comment_text" placeholder=" comment">
+        <input type="submit" value="send">
+    </form>
 </body>
 </html>

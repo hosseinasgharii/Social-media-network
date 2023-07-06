@@ -158,3 +158,20 @@ class BlockUserView(LoginRequiredMixin, View):
                 return HttpResponse("User is already blocked.")
 
         return HttpResponse("Invalid request.")
+
+
+class AccountDeleteView(LoginRequiredMixin, View):
+    def get(self, request):
+        user = request.user
+        user.delete_account()
+        messages.success(request, "Your account has been deleted.")
+        return redirect("accounts:login")
+
+
+class AccountDeactivateView(LoginRequiredMixin, View):
+    def get(self, request):
+        user = request.user
+        user.is_active = False
+        user.save()
+        messages.success(request, "Your account has been deactivated.")
+        return redirect("accounts:login")

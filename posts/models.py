@@ -2,7 +2,9 @@ from django.db import models
 from accounts.models import MyUser
 from django.utils.translation import gettext_lazy as _
 from django.utils import timezone
+from django.contrib.auth import get_user_model
 
+User = get_user_model()
 
 class PostModel(models.Model):
     user = models.ForeignKey(
@@ -36,15 +38,28 @@ class PostModel(models.Model):
         default=True,
         verbose_name="Active"
         )
-    
+    likes = models.ManyToManyField(
+        User,
+        related_name='liked_posts',
+        blank=True
+        )
+    dislikes = models.ManyToManyField(
+        User,
+        related_name='dislike_posts',
+        blank=True
+        )
 
     def report_post(self, user, reason):
         Report.objects.create(user=user, post=self, reason=reason)
 
     def __str__(self) -> str:
         return self.slug
-    
-    
+
+    def like_post(self, user):
+        self.likes.add(user)
+
+    def dislike_post(self, user):
+        self.likes.add(user)
 
 
 class Image(models.Model):

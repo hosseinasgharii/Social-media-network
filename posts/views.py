@@ -7,7 +7,8 @@ from django.contrib.auth.decorators import login_required
 from django.views import View
 from .forms import CreatePostForm, CommentForm, ReplyForm, ReportForm, PostForm
 from django.utils.text import slugify
-
+from django.utils.decorators import method_decorator
+from django.urls import reverse_lazy
 
 class CreatePostView(View):
     def get(self, request):
@@ -51,7 +52,7 @@ class PostDetailView(View):
             'posts/post_detail.html',
             {'post': post, 'comments': comments}
             )
-    
+
     def post(self, request, slug):
         form = CommentForm(request.POST)
         if form.is_valid():
@@ -61,24 +62,24 @@ class PostDetailView(View):
                 comment_text=comment_text,
                 user=request.user,
                 post=post)
-            return redirect("posts:post_detail", slug)
+            return redirect("posts:post_detail", post.slug)
         return redirect("posts:post_detail", slug)
 
 
+@method_decorator(require_POST, name='dispatch')
 class LikePostView(View):
-    @require_POST
     def post(self, request):
         post_id = request.POST.get('post_id')
-        post = get_object_or_404(PostModel, id=post_id)
+        post = PostModel.objects.get(id=post_id)
         post.like_post(request.user)
         return HttpResponse({'message': 'Post liked successfully'})
 
 
+@method_decorator(require_POST, name='dispatch')
 class UnlikePostView(View):
-    @require_POST
     def post(self, request):
         post_id = request.POST.get('post_id')
-        post = get_object_or_404(PostModel, id=post_id)
+        post = PostModel.objects.get(id=post_id)
         post.unlike_post(request.user)
         return HttpResponse({'message': 'Post unliked successfully'})
 
@@ -111,7 +112,8 @@ class ReplyCommentView(View):
                 comment_text=reply_text,
                 user=request.user,
                 post=comment.post,
-                reply_to=comment)
+                reply_to=comment
+            )
             return HttpResponse({'message': 'Reply added successfully'})
         return HttpResponse({'message': 'Invalid form data'})
 
@@ -163,7 +165,11 @@ class PostEditView(View):
     def get(self, request, post_id):
         post = get_object_or_404(PostModel, id=post_id, user=request.user)
         form = PostForm(instance=post)
-        return render(request, 'posts/edit_post.html', {'form': form, 'post': post})
+        return render(
+            request,
+            'posts/edit_post.html',
+            {'form': form, 'post': post}
+            )
 
     def post(self, request, post_id):
         post = get_object_or_404(PostModel, id=post_id, user=request.user)
@@ -171,7 +177,11 @@ class PostEditView(View):
         if form.is_valid():
             form.save()
             return redirect('posts:post_detail', post.slug)
-        return render(request, 'posts/edit_post.html', {'form': form, 'post': post})
+        return render(
+            request,
+            'posts/edit_post.html',
+            {'form': form, 'post': post}
+            )
 
 
 class PostDeleteView(View):
@@ -182,4 +192,12 @@ class PostDeleteView(View):
     def post(self, request, post_id):
         post = get_object_or_404(PostModel, id=post_id, user=request.user)
         post.delete()
-        return redirect('display_user_posts')
+        return redirect(reverse_lazy('accounts/profile.html'))
+
+
+class DeleteCommentView(View):
+    def post(self, request, comment_id):
+        comment = get_object_or_404(Comment, id=comment_id)
+        if comment.user == request.user:
+            comment.delete()
+        return redirect("posts:post_detail", slug=comment.post.slug)

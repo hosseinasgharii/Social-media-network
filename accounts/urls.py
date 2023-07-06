@@ -11,6 +11,8 @@ from accounts.views import (
     FollowingListView,
     PostsView,
     BlockUserView,
+    AccountDeactivateView,
+    AccountDeleteView
 )
 
 app_name = 'accounts'
@@ -27,4 +29,6 @@ urlpatterns = [
     path('following/<int:user_id>/', FollowingListView.as_view(), name='following_list'),
     path('posts/', PostsView.as_view(), name='posts'),
     path('block-user/<int:user_id>/', BlockUserView.as_view(), name='block_user'),
+    path("deactivate/", AccountDeactivateView.as_view(), name="deactivate"),
+    path("delete/", AccountDeleteView.as_view(), name="delete")
 ]

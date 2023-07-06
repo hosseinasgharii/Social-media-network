@@ -101,6 +101,10 @@ class MyUser(AbstractBaseUser):
         related_name='blocked_by',
         verbose_name="Blocked Users"
     )
+    is_delete = models.BooleanField(
+        default=False,
+        verbose_name="Deleted"
+        )
 
     objects = MyUserManager()
 
@@ -158,12 +162,16 @@ class MyUser(AbstractBaseUser):
 
     def get_following(self):
         return self.follower_relation.all()
-    
+
     def post_count(self):
         return self.show_post.count()
 
     def posts(self):
         return self.show_post.all()
+
+    def delete_account(self):
+        self.is_deleted = True
+        self.save()
 
 
 class Relationship(models.Model):
