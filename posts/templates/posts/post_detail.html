@@ -87,12 +87,16 @@
         // Update like and dislike counts when the forms are submitted
         document.getElementById("like-post-form").addEventListener("submit", function(event) {
             event.preventDefault();
-            // Increment the like count
-            var likeCount = document.getElementById("like-count");
-            likeCount.innerText = parseInt(likeCount.innerText) + 1;
-            // Hide the "Like" button and show the "Unlike" button
-            document.getElementById("like-post-form").style.display = "none";
-            document.getElementById("unlike-post-form").style.display = "block";
+            // Check if the dislike form is visible
+            var dislikeForm = document.getElementById("dislike-post-form");
+            if (dislikeForm.style.display !== "none") {
+                // Increment the like count
+                var likeCount = document.getElementById("like-count");
+                likeCount.innerText = parseInt(likeCount.innerText) + 1;
+                // Hide the "Like" button and show the "Unlike" button
+                document.getElementById("like-post-form").style.display = "none";
+                document.getElementById("unlike-post-form").style.display = "block";
+            }
         });
 
         document.getElementById("unlike-post-form").addEventListener("submit", function(event) {
@@ -107,12 +111,16 @@
 
         document.getElementById("dislike-post-form").addEventListener("submit", function(event) {
             event.preventDefault();
-            // Increment the dislike count
-            var dislikeCount = document.getElementById("dislike-count");
-            dislikeCount.innerText = parseInt(dislikeCount.innerText) + 1;
-            // Hide the "Dislike" button and show the "Remove Dislike" button
-            document.getElementById("dislike-post-form").style.display = "none";
-            document.getElementById("remove-dislike-post-form").style.display = "block";
+            // Check if the like form is visible
+            var likeForm = document.getElementById("like-post-form");
+            if (likeForm.style.display !== "none") {
+                // Increment the dislike count
+                var dislikeCount = document.getElementById("dislike-count");
+                dislikeCount.innerText = parseInt(dislikeCount.innerText) + 1;
+                // Hide the "Dislike" button and show the "Remove Dislike" button
+                document.getElementById("dislike-post-form").style.display = "none";
+                document.getElementById("remove-dislike-post-form").style.display = "block";
+            }
         });
 
         document.getElementById("remove-dislike-post-form").addEventListener("submit", function(event) {
