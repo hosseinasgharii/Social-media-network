@@ -31,4 +31,4 @@ For any inquiries or feedback, please contact(<ho3ein.m1991@gmail.com>)
 
 ### ERD
 
-  ![Entity Relationship Diagram](Diagram.jpg)
+  ![Entity Relationship Diagram](Diagram.png)
