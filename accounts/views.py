@@ -108,8 +108,10 @@ class FollowView(LoginRequiredMixin, View):
                 follower=request.user,
                 following=user_to_follow
                 )
-            messages.success(request, f"You are now following {user_to_follow.username}.")
-            
+            messages.success(
+                request, f"You are now following {user_to_follow.username}."
+                )
+
         return redirect('accounts:profile', user_to_follow.id)
 
 

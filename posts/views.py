@@ -73,7 +73,7 @@ class LikePostView(View):
         post_id = request.POST.get('post_id')
         post = PostModel.objects.get(id=post_id)
         post.like_post(request.user)
-        return HttpResponse({'message': 'Post liked successfully'})
+        return redirect("posts:post_detail", post.slug)
 
 
 class UnlikePostView(View):
@@ -82,7 +82,7 @@ class UnlikePostView(View):
         post_id = request.POST.get('post_id')
         post = PostModel.objects.get(id=post_id)
         post.remove_like(request.user)
-        return HttpResponse({'message': 'Post unliked successfully'})
+        return redirect("posts:post_detail", post.slug)
 
 
 class DislikePostView(View):
@@ -91,7 +91,7 @@ class DislikePostView(View):
         post_id = request.POST.get('post_id')
         post = PostModel.objects.get(id=post_id)
         post.dislike_post(request.user)
-        return HttpResponse({'message': 'Post dislike successfully'})
+        return redirect("posts:post_detail", post.slug)
     
     
 class UndislikePostView(View):
@@ -100,7 +100,7 @@ class UndislikePostView(View):
         post_id = request.POST.get('post_id')
         post = PostModel.objects.get(id=post_id)
         post.remove_dislike(request.user)
-        return HttpResponse({'message': 'Post undisliked successfully'})    
+        return redirect("posts:post_detail", post.slug)    
 
 
 class CommentPostView(View):
@@ -133,7 +133,7 @@ class ReplyCommentView(View):
                 post=comment.post,
                 reply_to=comment
             )
-            return HttpResponse({'message': 'Reply added successfully'})
+            return redirect("posts:post_detail", comment.post.slug)
         return HttpResponse({'message': 'Invalid form data'})
 
 

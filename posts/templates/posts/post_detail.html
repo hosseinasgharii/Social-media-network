@@ -28,11 +28,13 @@
         </form>
     <p>Like count: <span id="like-count">{{ post.likes.count }}</span></p>
     <p>Dislike count: <span id="dislike-count">{{ post.dislikes.count }}</span></p>
+    {% if request.user == post.user %}
     <a href="{% url 'posts:edit_post' post.id %}" class="btn btn-primary">Edit</a>
     <form action="{% url 'posts:delete_post' post.id %}" method="post">
         {% csrf_token %}
         <button type="submit">Delete</button>
     </form>
+    {% endif %}
     
     <h2>{{ post.slug }}</h2>
     <p>{{ post.caption }}</p>
@@ -64,10 +66,12 @@
                 <input type="text" name="reply_text" placeholder="Reply to this comment">
                 <input type="submit" value="Reply">
             </form>
-            <form action="{% url 'posts:delete_comment' comment.id %}" method="post" class="delete-comment-form">
+            {% if request.user == comment.user %}
+                 <form action="{% url 'posts:delete_comment' comment.id %}" method="post" class="delete-comment-form">
                 {% csrf_token %}
                 <button type="submit">Delete Comment</button>
-            </form>
+                </form>
+            {% endif %}
             
         </li>
         {% endfor %}
