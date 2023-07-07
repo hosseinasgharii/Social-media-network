@@ -1,14 +1,14 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.http import HttpResponse
 from django.views.decorators.http import require_POST
-from .models import PostModel, Comment, Report, SendPost, Image, Like, DisLike
+from .models import PostModel, Comment, Report, SendPost, Image, Like
 from accounts.models import MyUser
 from django.contrib.auth.decorators import login_required
 from django.views import View
 from .forms import CreatePostForm, CommentForm, ReplyForm, ReportForm, PostForm
 from django.utils.text import slugify
 from django.utils.decorators import method_decorator
-from django.urls import reverse_lazy
+
 
 class CreatePostView(View):
     def get(self, request):
@@ -92,15 +92,15 @@ class DislikePostView(View):
         post = PostModel.objects.get(id=post_id)
         post.dislike_post(request.user)
         return redirect("posts:post_detail", post.slug)
-    
-    
+
+
 class UndislikePostView(View):
     @method_decorator(require_POST)
     def post(self, request):
         post_id = request.POST.get('post_id')
         post = PostModel.objects.get(id=post_id)
         post.remove_dislike(request.user)
-        return redirect("posts:post_detail", post.slug)    
+        return redirect("posts:post_detail", post.slug)
 
 
 class CommentPostView(View):
