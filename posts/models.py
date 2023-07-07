@@ -6,6 +6,7 @@ from django.contrib.auth import get_user_model
 
 User = get_user_model()
 
+
 class PostModel(models.Model):
     user = models.ForeignKey(
         MyUser,
@@ -111,7 +112,7 @@ class Like(models.Model):
 
     @staticmethod
     def is_like(post, user):
-        return Like.objects.filter(post=post, user=user).exists()    
+        return Like.objects.filter(post=post, user=user).exists()
 
     def __str__(self):
         return f"{self.user.username} liked {self.post.slug}"
@@ -130,10 +131,10 @@ class DisLike(models.Model):
     class Meta:
         verbose_name = _("Dislike")
         verbose_name_plural = _("Dislikes")
-        
+
     @staticmethod
     def is_dislike(self, user):
-        return Like.objects.get(post=self, user=user).exists()    
+        return Like.objects.get(post=self, user=user).exists()
 
     def __str__(self):
         return f"{self.user.username} disliked {self.post.slug}"

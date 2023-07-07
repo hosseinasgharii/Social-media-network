@@ -64,8 +64,13 @@ class UserLogoutView(View):
 class UserProfileView(LoginRequiredMixin, View):
     def get(self, request, user_id):
         user = get_object_or_404(MyUser, pk=user_id)
+        query = request.GET.get('q')
+        if query:
+            results = MyUser.objects.filter(username__icontains=query)
+        else:
+            results = None
         post = PostModel.objects.filter(user=user)
-        context = {'user': user, 'post': post}
+        context = {'user': user, 'post': post, 'results': results}
         return render(request, 'accounts/profile.html', context=context)
 
 
@@ -91,14 +96,21 @@ class UserEditProfileView(LoginRequiredMixin, View):
 class FollowView(LoginRequiredMixin, View):
     def get(self, request, username):
         user_to_follow = get_object_or_404(MyUser, username=username)
-        Relationship.objects.create(
-            follower=request.user,
-            following=user_to_follow
-        )
-        messages.success(
-            request, f"You are now following {user_to_follow.username}."
-            )
-        return redirect('accounts:profile')
+        if Relationship.objects.filter(
+            follower=request.user, following=user_to_follow).exists():
+
+            messages.info(
+                request,
+                f"You are already following {user_to_follow.username}."
+                )
+        else:
+            Relationship.objects.create(
+                follower=request.user,
+                following=user_to_follow
+                )
+            messages.success(request, f"You are now following {user_to_follow.username}.")
+            
+        return redirect('accounts:profile', user_to_follow.id)
 
 
 class UnfollowView(LoginRequiredMixin, View):
