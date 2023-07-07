@@ -1,14 +1,10 @@
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
-# Create your models here.
 
 
 class MyUserManager(BaseUserManager):
     def create_user(self, email, username, password=None):
-        """
-        Creates and saves a User with the given email, date of
-        birth and password.
-        """
+
         if not email:
             raise ValueError("Users must have an email address")
 
@@ -22,10 +18,7 @@ class MyUserManager(BaseUserManager):
         return user
 
     def create_superuser(self, email, username, password=None):
-        """
-        Creates and saves a superuser with the given email, date of
-        birth and password.
-        """
+
         user = self.create_user(
             email,
             password=password,
@@ -40,26 +33,30 @@ class MyUser(AbstractBaseUser):
     username = models.CharField(
         max_length=50,
         unique=True,
-        verbose_name="Username"
-        )
+        verbose_name="Username",
+        help_text="Enter a unique username."
+    )
     firstname = models.CharField(
         max_length=50,
         blank=True,
         null=True,
-        verbose_name="First Name"
-        )
+        verbose_name="First Name",
+        help_text="Enter your first name."
+    )
     lastname = models.CharField(
         max_length=50,
         blank=True,
         null=True,
-        verbose_name="Last Name"
-        )
+        verbose_name="Last Name",
+        help_text="Enter your last name."
+    )
     bio = models.TextField(
         max_length=500,
         blank=True,
         null=True,
-        verbose_name="Bio"
-        )
+        verbose_name="Bio",
+        help_text="Enter a short bio about yourself."
+    )
     male = 1
     female = 2
     choice_gender = ((male, "male"), (female, "female"))
@@ -67,39 +64,50 @@ class MyUser(AbstractBaseUser):
         choices=choice_gender,
         blank=True,
         null=True,
-        verbose_name="Gender"
-        )
+        verbose_name="Gender",
+        help_text="Select your gender."
+    )
     phonenumber = models.CharField(
         max_length=11,
         blank=True,
         null=True,
-        verbose_name="Phone Number"
-        )
+        verbose_name="Phone Number",
+        help_text="Enter your phone number."
+    )
     email = models.EmailField(
         verbose_name="email address",
         max_length=255,
         unique=True,
-        help_text="Provide a valid email address"
-        )
+        help_text="Provide a valid email address."
+    )
     date_of_birth = models.DateField(
         blank=True,
         null=True,
-        verbose_name="Date of Birth"
-        )
+        verbose_name="Date of Birth",
+        help_text="Enter your date of birth."
+    )
     is_active = models.BooleanField(
         default=True,
-        verbose_name="Active"
-        )
+        verbose_name="Active",
+        help_text="Designates whether this user account is active."
+    )
     is_admin = models.BooleanField(
         default=False,
-        verbose_name="Admin"
-        )
+        verbose_name="Admin",
+        help_text="Designates whether this user is an administrator."
+    )
     blocked_users = models.ManyToManyField(
         'self',
         symmetrical=False,
         blank=True,
         related_name='blocked_by',
-        verbose_name="Blocked Users"
+        verbose_name="Blocked Users",
+        help_text="Users blocked by this user."
+    )
+    is_delete = models.BooleanField(
+        default=False,
+        verbose_name="Deleted",
+        help_text="Designates whether this user account is deleted."
     )
 
     objects = MyUserManager()
@@ -111,13 +119,9 @@ class MyUser(AbstractBaseUser):
         return self.email
 
     def has_perm(self, perm, obj=None):
-        "Does the user have a specific permission?"
-        # Simplest possible answer: Yes, always
         return True
 
     def has_module_perms(self, app_label):
-        "Does the user have permissions to view the app `app_label`?"
-        # Simplest possible answer: Yes, always
         return True
 
     def report_account(self, user, reason):
@@ -125,48 +129,58 @@ class MyUser(AbstractBaseUser):
 
     @property
     def is_staff(self):
-        "Is the user a member of staff?"
-        # Simplest possible answer: All admins are staff
         return self.is_admin
 
     def block_user(self, user):
-        """
-        Blocks another user.
-        """
         self.blocked_users.add(user)
 
     def unblock_user(self, user):
-        """
-        Unblocks a blocked user.
-        """
         self.blocked_users.remove(user)
 
     def is_blocked(self, user):
-        """
-        Checks if the user is blocked.
-        """
         return self.blocked_users.filter(id=user.id).exists()
+
+    def follower_count(self):
+        return self.following_relation.count()
+
+    def following_count(self):
+        return self.follower_relation.count()
+
+    def get_followers(self):
+        return self.following_relation.all()
+
+    def get_following(self):
+        return self.follower_relation.all()
+
+    def post_count(self):
+        return self.show_post.count()
+
+    def posts(self):
+        return self.show_post.all()
+
+    def delete_account(self):
+        self.delete()
 
 
 class Relationship(models.Model):
     follower = models.ForeignKey(
         MyUser,
-        related_name='following_relations',
-        related_query_name='following_relation',
-        on_delete=models.CASCADE,
-        verbose_name="Follower"
-        )
-    following = models.ForeignKey(
-        MyUser,
-        related_name='follower_relations',
+        related_name='follower_relation',
         related_query_name='follower_relation',
         on_delete=models.CASCADE,
+        verbose_name="Follower"
+    )
+    following = models.ForeignKey(
+        MyUser,
+        related_name='following_relation',
+        related_query_name='following_relation',
+        on_delete=models.CASCADE,
         verbose_name="Following"
-        )
+    )
     created_at = models.DateTimeField(
         auto_now_add=True,
         verbose_name="Created at"
-        )
+    )
 
     def __str__(self):
         return f'{self.follower.username} -> {self.following.username}'
@@ -177,16 +191,17 @@ class Report(models.Model):
         MyUser,
         on_delete=models.CASCADE,
         related_name="reporter_user"
-        )
+    )
     account = models.ForeignKey(
         MyUser,
         on_delete=models.CASCADE,
         related_name='reported_accounts',
         blank=True,
-        null=True)
+        null=True
+    )
     reason = models.TextField(
         max_length=500
-        )
+    )
 
     def __str__(self):
         if self.account:

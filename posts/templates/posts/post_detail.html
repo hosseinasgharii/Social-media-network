@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Post Detail</title>
+</head>
+<body>
+    
+    <h1>Post Detail</h1>
+        <form action="{% url 'posts:like_post' %}" method="post" id="like-post-form">
+            {% csrf_token %}
+            <input type="hidden" name="post_id" value="{{ post.id }}">
+            <button type="submit">Like</button>
+        </form>
+        <form action="{% url 'posts:remove_like' %}" method="post" id="unlike-post-form" style="display: none;">
+            {% csrf_token %}
+            <input type="hidden" name="post_id" value="{{ post.id }}">
+            <button type="submit">Unlike</button>
+        </form>
+        <form action="{% url 'posts:dislike_post' %}" method="post" id="dislike-post-form">
+            {% csrf_token %}
+            <input type="hidden" name="post_id" value="{{ post.id }}">
+            <button type="submit">Dislike</button>
+        </form>
+        <form action="{% url 'posts:remove_dislike' %}" method="post" id="remove-dislike-post-form" style="display: none;">
+            {% csrf_token %}
+            <input type="hidden" name="post_id" value="{{ post.id }}">
+            <button type="submit">Remove Dislike</button>
+        </form>
+    <p>Like count: <span id="like-count">{{ post.likes.count }}</span></p>
+    <p>Dislike count: <span id="dislike-count">{{ post.dislikes.count }}</span></p>
+    {% if request.user == post.user %}
+        <a href="{% url 'posts:edit_post' post.id %}" class="btn btn-primary">Edit</a>
+        <form action="{% url 'posts:delete_post' post.id %}" method="post">
+            {% csrf_token %}
+            <button type="submit">Delete</button>
+        </form>
+    {% endif %}
+    
+    <h2>{{ post.slug }}</h2>
+    <p>{{ post.caption }}</p>
+    <p>Created At: {{ post.create_time }}</p>
+    <p>Last Updated At: {{ post.update_time }}</p>
+    <p>Location: {{ post.location }}</p>
+
+    <h3>Comments</h3>
+    <ul>
+        {% for comment in comments %}
+        <li>
+            <p>{{ comment.comment_text }}</p>
+            <p>Commented by: {{ comment.user }}</p>
+            <p>Created At: {{ comment.create_time }}</p>
+            {% if comment.child.count > 0 %}
+            <ul>
+                {% for reply in comment.child.all %}
+                <li>
+                    <p>{{ reply.comment_text }}</p>
+                    <p>Replied by: {{ reply.user }}</p>
+                    <p>Created At: {{ reply.create_time }}</p>
+                </li>
+                {% endfor %}
+            </ul>
+            {% endif %}
+            <form action="{% url 'posts:reply_comment' %}" method="post">
+                {% csrf_token %}
+                <input type="hidden" name="comment_id" value="{{ comment.id }}">
+                <input type="text" name="reply_text" placeholder="Reply to this comment">
+                <input type="submit" value="Reply">
+            </form>
+            {% if request.user == comment.user %}
+                 <form action="{% url 'posts:delete_comment' comment.id %}" method="post" class="delete-comment-form">
+                {% csrf_token %}
+                <button type="submit">Delete Comment</button>
+                </form>
+            {% endif %}
+            
+        </li>
+        {% endfor %}
+    </ul>
+    <form action="" method="post">
+        {% csrf_token %}
+        <input type="text" name="comment_text" placeholder=" comment">
+        <input type="submit" value="send">
+    </form>
+    <a href="{% url "accounts:profile" request.user.id %}" ><button class="btn btn-primary">Back</button></a>
+
+    <script>
+        // Update like and dislike counts when the forms are submitted
+        document.getElementById("like-post-form").addEventListener("submit", function(event) {
+            event.preventDefault();
+            // Check if the dislike form is visible
+            var dislikeForm = document.getElementById("dislike-post-form");
+            if (dislikeForm.style.display !== "none") {
+                // Increment the like count
+                var likeCount = document.getElementById("like-count");
+                likeCount.innerText = parseInt(likeCount.innerText) + 1;
+                // Hide the "Like" button and show the "Unlike" button
+                document.getElementById("like-post-form").style.display = "none";
+                document.getElementById("unlike-post-form").style.display = "block";
+            }
+        });
+
+        document.getElementById("unlike-post-form").addEventListener("submit", function(event) {
+            event.preventDefault();
+            // Decrement the like count
+            var likeCount = document.getElementById("like-count");
+            likeCount.innerText = parseInt(likeCount.innerText) - 1;
+            // Hide the "Unlike" button and show the "Like" button
+            document.getElementById("unlike-post-form").style.display = "none";
+            document.getElementById("like-post-form").style.display = "block";
+        });
+
+        document.getElementById("dislike-post-form").addEventListener("submit", function(event) {
+            event.preventDefault();
+            // Check if the like form is visible
+            var likeForm = document.getElementById("like-post-form");
+            if (likeForm.style.display !== "none") {
+                // Increment the dislike count
+                var dislikeCount = document.getElementById("dislike-count");
+                dislikeCount.innerText = parseInt(dislikeCount.innerText) + 1;
+                // Hide the "Dislike" button and show the "Remove Dislike" button
+                document.getElementById("dislike-post-form").style.display = "none";
+                document.getElementById("remove-dislike-post-form").style.display = "block";
+            }
+        });
+
+        document.getElementById("remove-dislike-post-form").addEventListener("submit", function(event) {
+            event.preventDefault();
+            // Decrement the dislike count
+            var dislikeCount = document.getElementById("dislike-count");
+            dislikeCount.innerText = parseInt(dislikeCount.innerText) - 1;
+            // Hide the "Remove Dislike" button and show the "Dislike" button
+            document.getElementById("remove-dislike-post-form").style.display = "none";
+            document.getElementById("dislike-post-form").style.display = "block";
+        });
+    </script>
+</body>
+</html>

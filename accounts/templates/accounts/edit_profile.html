@@ -11,9 +11,7 @@
                     <div class="col-md-12">
                         <div>
                             <img src="http://lorempixel.com/200/200/abstract/1/" alt="Texto Alternativo" class="img-circle img-thumbnail">
-                            <h2>Gopinath Perumal</h2>
-                            <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
-                            tempor incididunt ut labore et dolore magna aliqua.</p>
+                            <p>Edit</p>
                             <div class="btn-group">
                                 <button type="button" class="btn btn-warning">
                                     Social</button>
@@ -35,42 +33,92 @@
             <div class="col-md-8 well" id="rightPanel">
                 <div class="row">
         <div class="col-md-12">
-            <form role="form">
+            <form action="" method="POST">
+                {% csrf_token %}
                 <h2>Edit your profile.<small>It's always easy</small></h2>
                 <hr class="colorgraph">
                 <div class="row">
                     <div class="col-xs-12 col-sm-6 col-md-6">
                         <div class="form-group">
-                            <input type="text" name="first_name" id="first_name" class="form-control input-lg" placeholder="First Name" tabindex="1">
+                            {{form.username}}
+                        </div>
+                <div class="row">
+                    <div class="col-xs-12 col-sm-6 col-md-6">
+                        <div class="form-group">
+                            {{form.firstname}}
                         </div>
                     </div>
                     <div class="col-xs-12 col-sm-6 col-md-6">
                         <div class="form-group">
-                            <input type="text" name="last_name" id="last_name" class="form-control input-lg" placeholder="Last Name" tabindex="2">
+                            {{form.lastname}}
                         </div>
                     </div>
                 </div>
                 <div class="form-group">
-                    <input type="email" name="email" id="email" class="form-control input-lg" placeholder="Email Address" tabindex="4">
+                    {{form.bio}}
                 </div>
                 <div class="row">
                     <div class="col-xs-12 col-sm-6 col-md-6">
                         <div class="form-group">
-                            <input type="password" name="password" id="password" class="form-control input-lg" placeholder="Password" tabindex="5">
+                            {{form.gender}}
                         </div>
                     </div>
                     <div class="col-xs-12 col-sm-6 col-md-6">
                         <div class="form-group">
-                            <input type="password" name="password_confirmation" id="password_confirmation" class="form-control input-lg" placeholder="Confirm Password" tabindex="6">
+                            {{form.phonenumber}}
+                        </div>
+                    </div>
+                    <div class="col-xs-12 col-sm-6 col-md-6">
+                        <div class="form-group">
+                            {{form.date_of_birth}}
                         </div>
                     </div>
                 </div>
                 <hr class="colorgraph">
                 <div class="row">
                     <div class="col-xs-12 col-md-6"></div>
-                    <div class="col-xs-12 col-md-6"><a href="#" class="btn btn-success btn-block btn-lg">Save</a></div>
                 </div>
+                <input type="submit" value="Save"><a href="{% url "accounts:profile" request.user.id %}" ><button class="btn btn-primary">Back</button></a>
+                
             </form>
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-6 col-md-offset-3">
+                        <div class="panel panel-default">
+                            <div class="panel-heading">
+                                <h2 class="panel-title">Deactivate Account</h2>
+                            </div>
+                            <div class="panel-body">
+                                <p>Are you sure you want to deactivate your account?</p>
+                                <form method="POST" action="{% url 'accounts:deactivate' %}">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-danger">Deactivate Account</button>
+                                    <a href="{% url 'accounts:profile' request.user.id %}" class="btn btn-default">Cancel</a>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-6 col-md-offset-3">
+                        <div class="panel panel-default">
+                            <div class="panel-heading">
+                                <h2 class="panel-title">Delete Account</h2>
+                            </div>
+                            <div class="panel-body">
+                                <p>Are you sure you want to delete your account? This action cannot be undone.</p>
+                                <form method="POST" action="{% url 'accounts:delete' %}">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-danger">Delete Account</button>
+                                    <a href="{% url 'accounts:profile' request.user.id %}" class="btn btn-default">Cancel</a>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
     <!-- Modal -->

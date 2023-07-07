@@ -1,0 +1,22 @@
+.search-results {
+    margin-top: 10px;
+  }
+  
+  .search-result {
+    display: flex;
+    align-items: center;
+    margin-bottom: 5px;
+  }
+  
+  .search-result p {
+    margin-right: 10px;
+  }
+  
+  .search-result button {
+    padding: 5px 10px;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+  }
+  

@@ -1,7 +1,8 @@
 <nav class="navbar navbar-expand-lg bg-body-tertiary">
   <div class="container-fluid">
-      <a class="navbar-brand" href="" style="color: rgb(32, 218, 193); font-size: 25px;">Social</a>
-
+      {% if request.user.is_authenticated  %}
+      <a class="navbar-brand" href="{% url "accounts:profile" request.user.id %}" style="color: rgb(32, 218, 193); font-size: 25px;">Profile</a>
+      {% endif %}
       <div class="collapse navbar-collapse" id="navbarSupportedContent">
           <ul class="navbar-nav me-auto mb-2 mb-lg-0">
               <li class="nav-item">
@@ -12,23 +13,34 @@
               <li class="nav-item ">
                     <a class="nav-link" href="{% url 'accounts:signup' %}" style="color: purple; font-size: 18px;">Sign up</a>
               </li>
+              <li class="nav-item ">
+                {% if request.user.is_authenticated  %}
+                <a class="nav-link" href="{% url 'accounts:logout' %}" style="color: purple; font-size: 18px;">Logout</a>
+                {% endif %}
+              </li>
           </ul>
-          <form class="d-flex" role="search">
-            {% if request.user.is_authenticated  %}
-              <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
-              <button class="btn btn-outline-success" type="submit">Search</button>
-            {% endif %}  
+          {% if user and user.is_authenticated %}
+            <form method="GET" action="{% url 'accounts:profile' user.id %}">
+            <input type="text" name="q" placeholder="Search users...">
+            <button type="submit">Search</button>
+          {% endif %}  
           </form>
-          {% if request.user.is_authenticated  %}
-          <a href="{% url 'accounts:logout' %}"><button class="btn btn-outline-primary ms-2" type="button" onclick="logout()">Logout</button></a>
+          {% if results %}
+            <h3>Search Results:</h3>
+            <div class="search-results">
+              {% for result in results %}
+                <div class="search-result">
+                  <p>{{ result.username }}</p>
+                  <form method="POST" action="{% url 'accounts:follow' result.username %}">
+                    {% csrf_token %}
+                    <button type="submit">Follow</button>
+                  </form>
+                </div>
+              {% empty %}
+                <p>No results found.</p>
+              {% endfor %}
+            </div>
           {% endif %}
       </div>
   </div>
 </nav>
-
-<script>
-  function logout() {
-      // Add your logout logic here
-      console.log('Logout button clicked');
-  }
-</script>
