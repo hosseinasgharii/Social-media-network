@@ -77,3 +77,9 @@ class UserEditProfileForm(forms.ModelForm):
             'bio', 'gender',
             'phonenumber', 'date_of_birth'
             ]
+
+    def clean_phonenumber(self):
+        phonenumber = self.cleaned_data.get('phonenumber')
+        if not phonenumber.isnumeric():
+            raise forms.ValidationError("Invalid phone number.")
+        return phonenumber

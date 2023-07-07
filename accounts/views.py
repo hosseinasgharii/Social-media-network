@@ -97,7 +97,7 @@ class FollowView(LoginRequiredMixin, View):
     def get(self, request, username):
         user_to_follow = get_object_or_404(MyUser, username=username)
         if Relationship.objects.filter(
-            follower=request.user, following=user_to_follow).exists():
+                follower=request.user, following=user_to_follow).exists():
 
             messages.info(
                 request,
