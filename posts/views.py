@@ -45,25 +45,32 @@ class CreatePostView(View):
 
 class PostDetailView(View):
     def get(self, request, slug):
-        post = get_object_or_404(PostModel, slug=slug)
-        comments = Comment.objects.filter(post=post, parent=None)
-        is_like = Like.is_like(post, request.user)
-        return render(
-            request,
-            'posts/post_detail.html',
-            {'post': post, 'comments': comments, 'is_like': is_like}
+        posts = PostModel.objects.filter(slug=slug)
+        if posts.exists():
+            post = posts.first()
+            comments = Comment.objects.filter(post=post, parent=None)
+            is_like = Like.is_like(post, request.user)
+            return render(
+                request,
+                'posts/post_detail.html',
+                {'post': post, 'comments': comments, 'is_like': is_like}
             )
+        else:
+            return HttpResponse("Post not found")
 
     def post(self, request, slug):
         form = CommentForm(request.POST)
         if form.is_valid():
             comment_text = form.cleaned_data['comment_text']
-            post = get_object_or_404(PostModel, slug=slug)
-            Comment.objects.create(
-                comment_text=comment_text,
-                user=request.user,
-                post=post)
-            return redirect("posts:post_detail", post.slug)
+            posts = PostModel.objects.filter(slug=slug)
+            if posts.exists():
+                post = posts.first()
+                Comment.objects.create(
+                    comment_text=comment_text,
+                    user=request.user,
+                    post=post
+                )
+                return redirect("posts:post_detail", post.slug)
         return redirect("posts:post_detail", slug)
 
 
