@@ -33,8 +33,22 @@
 					<a href="{% url 'accounts:following_list' user.id %}">
 						<li><span class="profile-stat-count"> {{ user.following_count }}</span> following</li>
 					</a>
+					
 				</ul>
 			</div>
+			{% if request.user != user %}
+			{% if request.user in user.followers.all %}
+			<form action="{% url 'accounts:follow' user.username %}" method="get" class="follow-form">
+				{% csrf_token %}
+				<button type="submit" class="btn profile-edit-btn">Follow</button>
+			</form>
+			{% else %}
+			<form action="{% url 'accounts:unfollow' user.username %}" method="get" class="follow-form">
+				{% csrf_token %}
+				<button type="submit" class="btn profile-edit-btn">Unfollow</button>
+			</form>
+			{% endif %}
+			{% endif %}
 			<div class="profile-bio">
 				<p><span class="profile-real-name">{{user.bio}}</span></p>
 			</div>

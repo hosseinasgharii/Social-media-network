@@ -125,7 +125,7 @@ class UnfollowView(LoginRequiredMixin, View):
         messages.success(
             request, f"You have unfollowed {user_to_unfollow.username}."
             )
-        return redirect('accounts:profile')
+        return redirect('accounts:profile', user_to_unfollow.id)
 
 
 class FollowerListView(LoginRequiredMixin, View):
